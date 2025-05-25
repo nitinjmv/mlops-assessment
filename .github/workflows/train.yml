@@ -1,0 +1,50 @@
+name: Preprocess, Train, Test, Validate
+
+on:
+  push:
+    paths:
+      - "data/**"
+      - "scripts/**"
+      - "tests/**"
+      - ".github/workflows/train.yml"
+
+jobs:
+  build-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies
+        run: |
+          pip install pandas scikit-learn pytest
+
+      - name: Preprocess data
+        run: python scripts/preprocess.py
+
+      - name: Run unit tests (after preprocessing)
+        run: pytest tests/test_preprocess.py
+
+      - name: Train model
+        run: python scripts/train.py
+
+      - name: Run unit tests (after training)
+        run: pytest tests/test_train.py
+
+      - name: Validate model accuracy
+        run: python scripts/validate.py
+
+      - name: Upload model and metrics
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: |
+            models/model_v1.pkl
+            models/metrics.json
