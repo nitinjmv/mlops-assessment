@@ -40,11 +40,11 @@ jobs:
       - name: Validate model accuracy
         run: python scripts/validate.py
 
-      # - name: Upload model and metrics
-      #   if: success()
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: trained-model
-      #     path: |
-      #       models/model_v1.pkl
-      #       models/metrics.json
+      - name: Upload model and metrics
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: |
+            models/model_v1.pkl
+            models/metrics.json
